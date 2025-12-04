@@ -56,14 +56,29 @@ jobs:
           body: |
             ## 📦 GitHub Name Mapper ${{ steps.version.outputs.tag }}
             
-            ### 安装方式
+            ### Installation / 安装方式
+            
+            **English:**
+            1. Download `github-name-mapper-${{ steps.version.outputs.tag }}.zip`
+            2. Extract to a local folder
+            3. Open Chrome → `chrome://extensions/`
+            4. Enable "Developer mode"
+            5. Click "Load unpacked" and select the extracted folder
+            
+            **中文：**
             1. 下载 `github-name-mapper-${{ steps.version.outputs.tag }}.zip`
             2. 解压到本地文件夹
             3. 打开 Chrome → `chrome://extensions/`
             4. 开启「开发者模式」
             5. 点击「加载已解压的扩展程序」选择解压后的文件夹
             
-            ### 更新方式
+            ### Update / 更新方式
+            
+            **English:**
+            1. Download the new version ZIP and extract
+            2. Go to `chrome://extensions/`, find the extension, click refresh
+            
+            **中文：**
             1. 下载新版本 ZIP 并解压
             2. 在 `chrome://extensions/` 找到扩展，点击刷新按钮
           files: |

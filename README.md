@@ -5,14 +5,142 @@
 </p>
 
 <p align="center">
+  <strong>A Chrome extension that maps GitHub usernames to "username(nickname)" format</strong>
+</p>
+
+<p align="center">
+  <a href="#-features">Features</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-configuration">Configuration</a> •
+  <a href="#-development">Development</a> •
+  <a href="#中文文档">中文</a>
+</p>
+
+---
+
+## ✨ Features
+
+- 🔄 **Remote Data Source** - Load developer mapping data from a JSON URL
+- ⏰ **Auto Update** - Optional daily auto-update from remote URL
+- 📝 **Local Rules** - Manually add local mapping rules with higher priority
+- 🎯 **Smart Replacement** - Only active on GitHub, intelligently identifies usernames
+- 🎛️ **Control Panel** - Standalone configuration interface with data preview and search
+- 🌐 **CORS Support** - Load JSON from any URL without CORS restrictions
+
+## 📸 Preview
+
+After enabling the extension, GitHub usernames will be displayed as:
+
+| Original | Replaced |
+|----------|----------|
+| `zhangsan-dev` | `zhangsan-dev(Zhang San)` |
+
+> 💡 Hover to see full info (domain account, email, etc.)
+
+## 🚀 Quick Start
+
+### Installation
+
+1. **Download**
+   ```bash
+   git clone https://github.com/MizuhaHimuraki/github-name-mapper.git
+   ```
+
+2. **Load in Chrome**
+   - Open Chrome and go to `chrome://extensions/`
+   - Enable **Developer mode** (top right)
+   - Click **Load unpacked**
+   - Select the `github-name-mapper` folder
+
+3. **Configure**
+   - Click the extension icon to open popup
+   - Click **Control Panel** for full settings
+   - Enter your JSON URL in "Basic Config"
+   - Click **Load** to fetch data
+
+## 📖 Configuration
+
+### JSON Format
+
+```json
+{
+  "code": 200,
+  "data": {
+    "total": 10,
+    "list": [
+      {
+        "domain": "zhangsan",
+        "nickname": "Zhang San",
+        "account": "zhangsan-dev",
+        "email": "zhangsan@example.com"
+      }
+    ]
+  },
+  "success": true
+}
+```
+
+| Field | Description | Required |
+|-------|-------------|:--------:|
+| `account` | GitHub username | ✅ |
+| `nickname` | Nickname/Alias | ✅ |
+| `domain` | Domain account | ❌ |
+| `email` | Email address | ❌ |
+
+## 🔧 Development
+
+### Project Structure
+
+```
+github-name-mapper/
+├── manifest.json      # Extension config
+├── background.js      # Service Worker
+├── content.js         # Content script
+├── popup.html/js/css  # Popup panel
+├── options.html/js/css # Options page
+└── icons/             # Icon files
+```
+
+### Local Development
+
+1. Edit code, then click **Refresh** on extension card at `chrome://extensions/`
+2. Refresh GitHub page to see changes
+3. Press `F12` to open DevTools for debugging
+
+## 🔄 Version Updates
+
+The extension auto-checks GitHub Releases every 12 hours. When a new version is found, a banner appears in the popup.
+
+### Release New Version
+
+```bash
+git tag v1.0.1
+git push origin v1.0.1
+```
+
+GitHub Actions will automatically create a release with the packaged ZIP file.
+
+## 📋 Roadmap
+
+- [ ] DingTalk integration (requires internal service)
+
+## 📄 License
+
+[MIT License](LICENSE) © 2025 MizuhaHimuraki
+
+---
+
+# 中文文档
+
+<p align="center">
   <strong>将 GitHub 用户名映射为「用户名(花名)」格式显示的 Chrome 扩展</strong>
 </p>
 
 <p align="center">
-  <a href="#功能特性">功能特性</a> •
-  <a href="#快速开始">快速开始</a> •
-  <a href="#配置说明">配置说明</a> •
-  <a href="#开发指南">开发指南</a>
+  <a href="#-功能特性">功能特性</a> •
+  <a href="#-快速开始">快速开始</a> •
+  <a href="#-配置说明">配置说明</a> •
+  <a href="#-开发指南">开发指南</a>
 </p>
 
 ---
@@ -77,13 +205,6 @@ brew install imagemagick
 convert icons/icon16.svg icons/icon16.png
 convert icons/icon48.svg icons/icon48.png
 convert icons/icon128.svg icons/icon128.png
-```
-
-**方法 3：使用 Inkscape**
-```bash
-inkscape icons/icon16.svg -w 16 -h 16 -o icons/icon16.png
-inkscape icons/icon48.svg -w 48 -h 48 -o icons/icon48.png
-inkscape icons/icon128.svg -w 128 -h 128 -o icons/icon128.png
 ```
 
 </details>
@@ -214,7 +335,3 @@ git push origin main --tags
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
-
-## 📄 License
-
-[MIT License](LICENSE) © 2025 MizuhaHimuraki
