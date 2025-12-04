@@ -207,6 +207,10 @@ git push origin main --tags
 - 打包生成 `github-name-mapper-vX.X.X.zip`
 - 上传到 Release Assets
 
+## 📋 Roadmap
+
+- [ ] 钉钉跳转联系用户（需要内部服务中转）
+
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
