@@ -122,10 +122,30 @@ function replaceUsernames() {
   processTextNodes();
 }
 
+// 需要排除的区域（不应替换用户名的地方）
+const EXCLUDED_SELECTORS = [
+  '.AppHeader',           // 顶部导航栏
+  '.AppHeader-context',   // 仓库路径面包屑
+  '.reponav',             // 仓库导航
+  '.pagehead',            // 页面头部（仓库名等）
+  '.repohead',            // 仓库头部
+  '[data-testid="breadcrumbs"]', // 面包屑导航
+  '.js-repo-nav',         // 仓库导航
+  '.UnderlineNav',        // 下划线导航
+];
+
+// 检查元素是否在排除区域内
+function isInExcludedArea(el) {
+  return EXCLUDED_SELECTORS.some(selector => el.closest(selector));
+}
+
 // 处理单个元素
 function processElement(el) {
   // 跳过已处理的元素
   if (el.hasAttribute('data-gnm-original')) return;
+  
+  // 跳过排除区域
+  if (isInExcludedArea(el)) return;
   
   const text = el.textContent.trim();
   const username = extractUsername(el, text);
@@ -154,27 +174,34 @@ function processElement(el) {
 
 // 从元素或文本中提取用户名
 function extractUsername(el, text) {
+  // 检查 hovercard 类型，只处理 user 类型
+  const hovercardType = el.getAttribute('data-hovercard-type');
+  if (hovercardType && hovercardType !== 'user') {
+    return null; // 跳过 repository、organization 等类型
+  }
+  
   // 尝试从 href 提取
   const href = el.getAttribute('href');
   if (href) {
-    const match = href.match(/^\/([a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)(?:\/|$)/);
+    // 只匹配纯用户链接 /username，不匹配 /username/repo
+    const match = href.match(/^\/([a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)$/);
     if (match) {
       return match[1];
     }
   }
   
-  // 从 data-hovercard-url 提取
+  // 从 data-hovercard-url 提取（仅当是 user 类型时）
   const hovercardUrl = el.getAttribute('data-hovercard-url');
-  if (hovercardUrl) {
+  if (hovercardUrl && hovercardUrl.includes('/users/')) {
     const match = hovercardUrl.match(/\/users\/([^\/]+)/);
     if (match) {
       return match[1];
     }
   }
   
-  // 从文本提取 (去掉 @ 前缀)
+  // 从文本提取 (去掉 @ 前缀)，但文本不能包含 /
   const cleanText = text.replace(/^@/, '').trim();
-  if (/^[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(cleanText)) {
+  if (/^[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(cleanText) && !cleanText.includes('/')) {
     return cleanText;
   }
   
