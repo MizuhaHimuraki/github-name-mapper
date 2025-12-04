@@ -20,6 +20,8 @@
 
 ## ✨ Features
 
+Full feature guide and management instructions: [**Features & Management Guide**](docs/en/Features.md)
+
 - 🔄 **Remote Data Source** - Load developer mapping data from a JSON URL
 - ⏰ **Auto Update** - Optional daily auto-update from remote URL
 - 📝 **Local Rules** - Manually add local mapping rules with higher priority
@@ -30,7 +32,9 @@
 
 ## 📸 Preview
 
-After enabling the extension, GitHub usernames will be displayed as:
+After enabling the extension, GitHub usernames will be displayed with nicknames.
+
+![Commit History Preview](docs/img/demos/nick-in-commit.png)
 
 | Original | Replaced |
 |----------|----------|
@@ -40,6 +44,8 @@ After enabling the extension, GitHub usernames will be displayed as:
 
 ## 🚀 Quick Start
 
+Detailed installation guide with screenshots: [**Installation Guide**](docs/en/Install.md)
+
 ### Installation
 
 1. **Download**
@@ -48,16 +54,14 @@ After enabling the extension, GitHub usernames will be displayed as:
    ```
 
 2. **Load in Chrome**
-   - Open Chrome and go to `chrome://extensions/`
-   - Enable **Developer mode** (top right)
-   - Click **Load unpacked**
-   - Select the `github-name-mapper` folder
+   - Open `chrome://extensions/`
+   - Enable **Developer mode**
+   - Click **Load unpacked** and select the folder
 
 3. **Configure**
-   - Click the extension icon to open popup
-   - Click **Control Panel** for full settings
+   - Click extension icon -> **Control Panel**
    - Enter your JSON URL in "Basic Config"
-   - Click **Load** to fetch data
+   - Click **Load**
 
 ## 📖 Configuration
 
@@ -99,6 +103,7 @@ github-name-mapper/
 ├── content.js         # Content script
 ├── popup.html/js/css  # Popup panel
 ├── options.html/js/css # Options page
+├── docs/              # Documentation & Images
 └── icons/             # Icon files
 ```
 
@@ -110,7 +115,7 @@ github-name-mapper/
 
 ## 🔄 Version Updates
 
-The extension auto-checks GitHub Releases every 12 hours. When a new version is found, a banner appears in the popup.
+The extension auto-checks GitHub Releases every 12 hours.
 
 ### Release New Version
 
@@ -148,6 +153,8 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
 
 ## ✨ 功能特性
 
+完整功能介绍与管理指南：[**功能特性与管理指南**](docs/zh/Features.md)
+
 - 🔄 **远程数据源** - 配置 JSON URL 自动加载开发者映射数据
 - ⏰ **每日自动更新** - 可选择启用每天自动从远程 URL 更新数据
 - 📝 **本地规则** - 支持手动添加本地映射规则，优先级高于远程数据
@@ -160,6 +167,8 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
 
 插件启用后，GitHub 页面上的用户名会变成：
 
+![提交历史预览](docs/img/demos/nick-in-commit.png)
+
 | 原始显示 | 替换后显示 |
 |---------|-----------|
 | `zhangsan-dev` | `zhangsan-dev(张三)` |
@@ -167,6 +176,8 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
 > 💡 鼠标悬停会显示完整信息（域账号、邮箱等）
 
 ## 🚀 快速开始
+
+带截图的详细安装教程：[**安装指南**](docs/zh/Install.md)
 
 ### 安装步骤
 
@@ -176,46 +187,18 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
    ```
 
 2. **加载到 Chrome**
-   - 打开 Chrome 浏览器，访问 `chrome://extensions/`
-   - 开启右上角的「**开发者模式**」
-   - 点击「**加载已解压的扩展程序**」
-   - 选择 `github-name-mapper` 文件夹
+   - 访问 `chrome://extensions/`
+   - 开启「**开发者模式**」
+   - 点击「**加载已解压的扩展程序**」并选择文件夹
 
 3. **配置数据源**
-   - 点击扩展图标打开弹出面板
-   - 点击「**控制面板**」进入完整配置页面
-   - 在「基础配置」中填入你的 JSON URL
-   - 点击「**加载**」获取远程数据
-
-### 图标生成
-
-如果 PNG 图标缺失，可以从 SVG 生成：
-
-<details>
-<summary>点击展开图标生成方法</summary>
-
-**方法 1：使用在线工具**
-
-访问 [SVG to PNG Converter](https://svgtopng.com/) 上传 `icons/` 目录下的 SVG 文件
-
-**方法 2：使用 ImageMagick**
-```bash
-# macOS 安装
-brew install imagemagick
-
-# 转换图标
-convert icons/icon16.svg icons/icon16.png
-convert icons/icon48.svg icons/icon48.png
-convert icons/icon128.svg icons/icon128.png
-```
-
-</details>
+   - 点击扩展图标 -> 「**控制面板**」
+   - 在「基础配置」中填入 JSON URL
+   - 点击「**加载**」
 
 ## 📖 配置说明
 
 ### JSON 数据格式
-
-插件支持以下 JSON 格式：
 
 ```json
 {
@@ -248,16 +231,9 @@ convert icons/icon128.svg icons/icon128.png
 
 ### 本地规则
 
-除了远程数据源，你还可以手动添加本地规则：
-
 1. 进入控制面板 → 「本地规则」标签
 2. 填写 GitHub 用户名和花名
 3. 点击添加
-
-本地规则优先级高于远程数据，适合：
-- 添加临时映射
-- 覆盖远程数据中的错误信息
-- 添加不在远程数据源中的用户
 
 ## 🔧 开发指南
 
@@ -271,64 +247,29 @@ github-name-mapper/
 ├── content.css        # 替换样式
 ├── popup.html/js/css  # 弹出面板
 ├── options.html/js/css # 控制面板
-├── sample-data.json   # 示例数据
-├── icons/             # 图标文件
-└── LICENSE            # MIT 许可证
+├── docs/              # 文档与图片
+└── icons/             # 图标文件
 ```
 
 ### 本地调试
 
-1. 修改代码后，在 `chrome://extensions/` 点击扩展卡片上的 **刷新** 按钮
+1. 修改代码后，在 `chrome://extensions/` 点击 **刷新**
 2. 刷新 GitHub 页面查看效果
-3. 按 `F12` 打开开发者工具查看控制台日志
-
-### 调试 Background Script
-
-1. 在 `chrome://extensions/` 找到扩展
-2. 点击「**Service Worker**」链接打开 DevTools
-3. 在 Console 面板查看日志
-
-### 权限说明
-
-| 权限 | 用途 |
-|------|------|
-| `storage` | 存储配置和开发者映射数据 |
-| `alarms` | 实现每日自动更新功能 |
-| `activeTab` | 访问当前标签页 |
-| `host_permissions` | 在 GitHub 域名下运行，以及加载远程 JSON |
+3. 按 `F12` 打开开发者工具
 
 ## 🔄 版本更新
 
 ### 自动检查更新
 
-扩展会自动检查 GitHub Releases 上的最新版本：
 - 每 12 小时自动检查一次
 - 发现新版本时，popup 面板会显示更新提示
-- 点击「下载」跳转到 GitHub Releases 页面下载最新版本
 
 ### 发布新版本
 
-项目使用 GitHub Actions 自动打包发布，有两种方式：
-
-**方式 1：推送 Tag（推荐）**
 ```bash
-# 更新 manifest.json 中的版本号
-git add .
-git commit -m "chore: bump version to 1.0.1"
 git tag v1.0.1
-git push origin main --tags
+git push origin v1.0.1
 ```
-
-**方式 2：手动触发**
-1. 进入 GitHub 仓库 → Actions → Release
-2. 点击「Run workflow」
-3. 输入版本号（如 `1.0.1`）
-4. 点击「Run workflow」执行
-
-发布后会自动：
-- 创建 GitHub Release
-- 打包生成 `github-name-mapper-vX.X.X.zip`
-- 上传到 Release Assets
 
 ## 📋 Roadmap
 

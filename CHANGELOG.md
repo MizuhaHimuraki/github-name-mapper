@@ -74,3 +74,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 每日自动更新选项
 - 控制面板配置界面
 
+
