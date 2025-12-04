@@ -113,6 +113,35 @@ function setupEventListeners() {
     await sendMessage({ action: 'dismissUpdate' });
     document.getElementById('updateBanner').style.display = 'none';
   });
+  
+  // 手动检查更新
+  document.getElementById('checkUpdateBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('checkUpdateBtn');
+    btn.classList.add('checking');
+    btn.disabled = true;
+    
+    showMessage('正在检查更新...', 'info');
+    
+    const result = await sendMessage({ action: 'checkUpdate' });
+    
+    btn.classList.remove('checking');
+    btn.disabled = false;
+    
+    if (result.success) {
+      if (result.hasUpdate) {
+        // 显示更新横幅
+        const banner = document.getElementById('updateBanner');
+        document.getElementById('latestVersion').textContent = `v${result.latestVersion}`;
+        document.getElementById('updateLink').href = result.downloadUrl;
+        banner.style.display = 'flex';
+        showMessage(`发现新版本 v${result.latestVersion}`, 'success');
+      } else {
+        showMessage('当前已是最新版本', 'success');
+      }
+    } else {
+      showMessage(result.error || '检查更新失败', 'error');
+    }
+  });
 }
 
 function sendMessage(message) {
