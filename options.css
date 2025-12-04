@@ -311,6 +311,36 @@ body {
   padding-bottom: 0;
 }
 
+/* 主开关样式 */
+.switch-group.main-switch {
+  padding-bottom: 16px;
+  margin-bottom: 8px;
+}
+
+.switch-group.main-switch .switch-info label {
+  font-size: 15px;
+}
+
+/* 子开关容器 */
+.sub-switches {
+  padding-left: 8px;
+  border-left: 2px solid var(--border-color);
+  margin-left: 8px;
+  transition: opacity 0.2s;
+}
+
+.sub-switches .switch-group {
+  padding: 10px 0;
+}
+
+.sub-switches .switch-info label {
+  font-size: 13px;
+}
+
+.sub-switches .switch-info p {
+  font-size: 11px;
+}
+
 .switch-info label {
   margin-bottom: 2px;
 }

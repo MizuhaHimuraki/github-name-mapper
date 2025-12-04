@@ -71,15 +71,72 @@
             <h3>功能开关</h3>
           </div>
           <div class="card-body">
-            <div class="form-group switch-group">
+            <div class="form-group switch-group main-switch">
               <div class="switch-info">
-                <label>启用插件</label>
-                <p>开启后将在 GitHub 页面自动替换用户名</p>
+                <label>🔌 启用插件</label>
+                <p>总开关，关闭后所有功能停用</p>
               </div>
               <label class="toggle-switch">
                 <input type="checkbox" id="enableToggle">
                 <span class="slider"></span>
               </label>
+            </div>
+            
+            <div class="sub-switches" id="subSwitches">
+              <div class="form-group switch-group">
+                <div class="switch-info">
+                  <label>👤 识别用户</label>
+                  <p>将 GitHub 用户名替换为「用户名(花名)」格式</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="featureReplaceToggle">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="form-group switch-group">
+                <div class="switch-info">
+                  <label>✨ 文字高亮</label>
+                  <p>为已识别的用户名文字添加微妙的背景色</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="featureHighlightToggle">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="form-group switch-group">
+                <div class="switch-info">
+                  <label>🖼️ 头像高亮</label>
+                  <p>为已识别用户的头像添加渐变边框</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="featureAvatarHighlightToggle">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="form-group switch-group">
+                <div class="switch-info">
+                  <label>💬 @@ 快速补全</label>
+                  <p>输入 @@ 或按 ⌘/Ctrl+Shift+M 快速提及团队成员</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="featureMentionToggle">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              
+              <div class="form-group switch-group">
+                <div class="switch-info">
+                  <label>🐛 调试模式</label>
+                  <p>在浏览器控制台输出调试日志（F12 查看）</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="debugToggle">
+                  <span class="slider"></span>
+                </label>
+              </div>
             </div>
           </div>
         </div>

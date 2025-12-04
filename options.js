@@ -27,6 +27,16 @@ function updateUI() {
   document.getElementById('enableToggle').checked = currentConfig.enabled;
   updateStatusBadge(currentConfig.enabled);
   
+  // 功能开关
+  document.getElementById('featureReplaceToggle').checked = currentConfig.featureReplace !== false;
+  document.getElementById('featureHighlightToggle').checked = currentConfig.featureHighlight !== false;
+  document.getElementById('featureAvatarHighlightToggle').checked = currentConfig.featureAvatarHighlight !== false;
+  document.getElementById('featureMentionToggle').checked = currentConfig.featureMention !== false;
+  document.getElementById('debugToggle').checked = currentConfig.debug || false;
+  
+  // 子开关禁用状态
+  updateSubSwitches(currentConfig.enabled);
+  
   // JSON URL
   document.getElementById('jsonUrl').value = currentConfig.jsonUrl || '';
   
@@ -57,6 +67,15 @@ function updateStatusBadge(enabled) {
   } else {
     badge.classList.add('disabled');
     badge.querySelector('.text').textContent = '已禁用';
+  }
+}
+
+// 更新子开关状态
+function updateSubSwitches(enabled) {
+  const subSwitches = document.getElementById('subSwitches');
+  if (subSwitches) {
+    subSwitches.style.opacity = enabled ? '1' : '0.5';
+    subSwitches.style.pointerEvents = enabled ? 'auto' : 'none';
   }
 }
 
@@ -97,12 +116,41 @@ function setupNavigation() {
 
 // 设置事件监听
 function setupEventListeners() {
-  // 启用开关
+  // 启用开关（总开关）
   document.getElementById('enableToggle').addEventListener('change', async (e) => {
     currentConfig.enabled = e.target.checked;
     await sendMessage({ action: 'toggle', enabled: e.target.checked });
     updateStatusBadge(e.target.checked);
+    updateSubSwitches(e.target.checked);
     showToast(e.target.checked ? '已启用插件' : '已禁用插件', 'success');
+  });
+  
+  // 识别用户开关
+  document.getElementById('featureReplaceToggle').addEventListener('change', async (e) => {
+    currentConfig.featureReplace = e.target.checked;
+    await sendMessage({ action: 'saveConfig', config: currentConfig });
+    showToast(e.target.checked ? '已开启用户识别' : '已关闭用户识别', 'success');
+  });
+  
+  // 文字高亮开关
+  document.getElementById('featureHighlightToggle').addEventListener('change', async (e) => {
+    currentConfig.featureHighlight = e.target.checked;
+    await sendMessage({ action: 'saveConfig', config: currentConfig });
+    showToast(e.target.checked ? '已开启文字高亮' : '已关闭文字高亮', 'success');
+  });
+  
+  // 头像高亮开关
+  document.getElementById('featureAvatarHighlightToggle').addEventListener('change', async (e) => {
+    currentConfig.featureAvatarHighlight = e.target.checked;
+    await sendMessage({ action: 'saveConfig', config: currentConfig });
+    showToast(e.target.checked ? '已开启头像高亮' : '已关闭头像高亮', 'success');
+  });
+  
+  // @@ 快速补全开关
+  document.getElementById('featureMentionToggle').addEventListener('change', async (e) => {
+    currentConfig.featureMention = e.target.checked;
+    await sendMessage({ action: 'saveConfig', config: currentConfig });
+    showToast(e.target.checked ? '已开启 @@ 快速补全' : '已关闭 @@ 快速补全', 'success');
   });
   
   // 自动更新开关
@@ -112,11 +160,18 @@ function setupEventListeners() {
     showToast(e.target.checked ? '已开启每日自动更新' : '已关闭自动更新', 'success');
   });
   
+  // 调试模式开关
+  document.getElementById('debugToggle').addEventListener('change', async (e) => {
+    currentConfig.debug = e.target.checked;
+    await sendMessage({ action: 'saveConfig', config: currentConfig });
+    showToast(e.target.checked ? '已开启调试模式，刷新 GitHub 页面后按 F12 查看' : '已关闭调试模式', 'success');
+  });
+  
   // 加载数据按钮
   document.getElementById('fetchBtn').addEventListener('click', async () => {
     const url = document.getElementById('jsonUrl').value.trim();
     if (!url) {
-      showToast('请输入 JSON URL', 'error');
+      showToast('请输入用户数据源地址', 'error');
       return;
     }
     

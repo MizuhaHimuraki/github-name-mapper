@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GitHub Name Mapper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "将 GitHub 用户名映射为 花名(nick) 格式显示",
   "permissions": [
     "storage",

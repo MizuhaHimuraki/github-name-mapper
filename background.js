@@ -13,7 +13,14 @@ const DEFAULT_CONFIG = {
   // 版本更新相关
   latestVersion: null,
   lastVersionCheck: null,
-  dismissedVersion: null
+  dismissedVersion: null,
+  // 功能开关
+  featureReplace: true,      // 识别用户（替换用户名）
+  featureHighlight: true,    // 识别用户高亮（文字）
+  featureAvatarHighlight: true, // 识别用户高亮（头像）
+  featureMention: true,      // @@ 快速补全
+  // 调试模式
+  debug: false
 };
 
 // 初始化

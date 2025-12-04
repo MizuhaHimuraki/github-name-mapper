@@ -26,6 +26,7 @@
 - 🎯 **Smart Replacement** - Only active on GitHub, intelligently identifies usernames
 - 🎛️ **Control Panel** - Standalone configuration interface with data preview and search
 - 🌐 **CORS Support** - Load JSON from any URL without CORS restrictions
+- 💬 **Mention Autocomplete** - Type `@@` or press `Ctrl+Shift+M` to quickly mention team members by nickname
 
 ## 📸 Preview
 
@@ -153,6 +154,7 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
 - 🎯 **精准替换** - 仅在 GitHub 网站启用，智能识别并替换用户名
 - 🎛️ **控制面板** - 独立的配置管理界面，支持数据预览和搜索
 - 🌐 **跨域支持** - 支持从任意 URL 加载 JSON 数据，无需担心 CORS 限制
+- 💬 **Mention 自动补全** - 输入 `@@` 或按 `Ctrl+Shift+M` 快速通过花名提及团队成员
 
 ## 📸 显示效果
 
