@@ -1,13 +1,19 @@
 // GitHub Name Mapper - Background Service Worker
 
 const ALARM_NAME = 'daily-update';
+const VERSION_CHECK_ALARM = 'version-check';
+const GITHUB_REPO = 'MizuhaHimuraki/github-name-mapper';
 const DEFAULT_CONFIG = {
   enabled: true,
   autoUpdate: true,
   jsonUrl: '',
   lastUpdate: null,
   developers: [],
-  localRules: []
+  localRules: [],
+  // 版本更新相关
+  latestVersion: null,
+  lastVersionCheck: null,
+  dismissedVersion: null
 };
 
 // 初始化
@@ -21,6 +27,12 @@ chrome.runtime.onInstalled.addListener(async () => {
   if (config.autoUpdate) {
     setupDailyAlarm();
   }
+  
+  // 设置版本检查定时器（每12小时检查一次）
+  setupVersionCheckAlarm();
+  
+  // 安装/更新后立即检查一次版本
+  checkForUpdates();
 });
 
 // 定时器触发
@@ -30,6 +42,8 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     if (config.autoUpdate && config.jsonUrl) {
       await fetchAndUpdateData(config.jsonUrl);
     }
+  } else if (alarm.name === VERSION_CHECK_ALARM) {
+    await checkForUpdates();
   }
 });
 
@@ -91,6 +105,31 @@ async function handleMessage(request, sender, sendResponse) {
         await saveConfig(currentConfig);
         sendResponse({ success: true });
         break;
+      
+      case 'checkUpdate':
+        const updateInfo = await checkForUpdates();
+        sendResponse(updateInfo);
+        break;
+      
+      case 'getUpdateInfo':
+        const updateConfig = await getConfig();
+        const currentVersion = chrome.runtime.getManifest().version;
+        sendResponse({
+          success: true,
+          currentVersion,
+          latestVersion: updateConfig.latestVersion,
+          hasUpdate: updateConfig.latestVersion && compareVersions(updateConfig.latestVersion, currentVersion) > 0,
+          dismissed: updateConfig.dismissedVersion === updateConfig.latestVersion,
+          downloadUrl: `https://github.com/${GITHUB_REPO}/releases/latest`
+        });
+        break;
+      
+      case 'dismissUpdate':
+        const dismissConfig = await getConfig();
+        dismissConfig.dismissedVersion = dismissConfig.latestVersion;
+        await saveConfig(dismissConfig);
+        sendResponse({ success: true });
+        break;
         
       default:
         sendResponse({ success: false, error: 'Unknown action' });
@@ -123,6 +162,74 @@ function setupDailyAlarm() {
   chrome.alarms.create(ALARM_NAME, {
     periodInMinutes: 24 * 60
   });
+}
+
+// 设置版本检查定时器
+function setupVersionCheckAlarm() {
+  // 每12小时检查一次
+  chrome.alarms.create(VERSION_CHECK_ALARM, {
+    periodInMinutes: 12 * 60
+  });
+}
+
+// 检查 GitHub 最新版本
+async function checkForUpdates() {
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`,
+      {
+        headers: {
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      }
+    );
+    
+    if (!response.ok) {
+      console.log('Version check failed:', response.status);
+      return { success: false, error: `HTTP ${response.status}` };
+    }
+    
+    const data = await response.json();
+    const latestVersion = data.tag_name.replace(/^v/, '');
+    const currentVersion = chrome.runtime.getManifest().version;
+    
+    const config = await getConfig();
+    config.latestVersion = latestVersion;
+    config.lastVersionCheck = new Date().toISOString();
+    await saveConfig(config);
+    
+    const hasUpdate = compareVersions(latestVersion, currentVersion) > 0;
+    
+    console.log(`Version check: current=${currentVersion}, latest=${latestVersion}, hasUpdate=${hasUpdate}`);
+    
+    return {
+      success: true,
+      currentVersion,
+      latestVersion,
+      hasUpdate,
+      downloadUrl: data.html_url,
+      releaseNotes: data.body
+    };
+  } catch (error) {
+    console.error('Version check error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+// 版本号比较 (返回 1: a > b, -1: a < b, 0: a = b)
+function compareVersions(a, b) {
+  const partsA = a.split('.').map(Number);
+  const partsB = b.split('.').map(Number);
+  
+  for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+    const numA = partsA[i] || 0;
+    const numB = partsB[i] || 0;
+    
+    if (numA > numB) return 1;
+    if (numA < numB) return -1;
+  }
+  
+  return 0;
 }
 
 // 获取远程数据并更新

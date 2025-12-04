@@ -174,6 +174,39 @@ github-name-mapper/
 | `activeTab` | 访问当前标签页 |
 | `host_permissions` | 在 GitHub 域名下运行，以及加载远程 JSON |
 
+## 🔄 版本更新
+
+### 自动检查更新
+
+扩展会自动检查 GitHub Releases 上的最新版本：
+- 每 12 小时自动检查一次
+- 发现新版本时，popup 面板会显示更新提示
+- 点击「下载」跳转到 GitHub Releases 页面下载最新版本
+
+### 发布新版本
+
+项目使用 GitHub Actions 自动打包发布，有两种方式：
+
+**方式 1：推送 Tag（推荐）**
+```bash
+# 更新 manifest.json 中的版本号
+git add .
+git commit -m "chore: bump version to 1.0.1"
+git tag v1.0.1
+git push origin main --tags
+```
+
+**方式 2：手动触发**
+1. 进入 GitHub 仓库 → Actions → Release
+2. 点击「Run workflow」
+3. 输入版本号（如 `1.0.1`）
+4. 点击「Run workflow」执行
+
+发布后会自动：
+- 创建 GitHub Release
+- 打包生成 `github-name-mapper-vX.X.X.zip`
+- 上传到 Release Assets
+
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！

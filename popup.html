@@ -22,6 +22,22 @@
     </header>
     
     <main class="content">
+      <!-- 更新提示横幅 -->
+      <div class="update-banner" id="updateBanner" style="display: none;">
+        <div class="update-content">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>发现新版本 <strong id="latestVersion"></strong></span>
+        </div>
+        <div class="update-actions">
+          <a href="#" class="update-link" id="updateLink" target="_blank">下载</a>
+          <button class="update-dismiss" id="dismissUpdate">×</button>
+        </div>
+      </div>
+      
       <div class="status-card">
         <div class="status-item">
           <span class="label">状态</span>
@@ -34,6 +50,10 @@
         <div class="status-item">
           <span class="label">最后更新</span>
           <span class="value" id="lastUpdate">--</span>
+        </div>
+        <div class="status-item">
+          <span class="label">当前版本</span>
+          <span class="value" id="currentVersion">--</span>
         </div>
       </div>
       

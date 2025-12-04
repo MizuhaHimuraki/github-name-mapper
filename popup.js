@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
   await loadStatus();
+  await checkForUpdates();
   setupEventListeners();
 }
 
@@ -42,6 +43,24 @@ async function loadStatus() {
     if (!config.jsonUrl) {
       document.getElementById('refreshBtn').disabled = true;
       showMessage('请先在控制面板中配置 JSON URL', 'error');
+    }
+  }
+}
+
+// 检查更新
+async function checkForUpdates() {
+  const result = await sendMessage({ action: 'getUpdateInfo' });
+  
+  if (result.success) {
+    // 显示当前版本
+    document.getElementById('currentVersion').textContent = `v${result.currentVersion}`;
+    
+    // 如果有更新且未被忽略，显示更新横幅
+    if (result.hasUpdate && !result.dismissed) {
+      const banner = document.getElementById('updateBanner');
+      document.getElementById('latestVersion').textContent = `v${result.latestVersion}`;
+      document.getElementById('updateLink').href = result.downloadUrl;
+      banner.style.display = 'flex';
     }
   }
 }
@@ -87,6 +106,12 @@ function setupEventListeners() {
   // 打开控制面板
   document.getElementById('optionsBtn').addEventListener('click', () => {
     chrome.runtime.openOptionsPage();
+  });
+  
+  // 忽略此版本更新
+  document.getElementById('dismissUpdate').addEventListener('click', async () => {
+    await sendMessage({ action: 'dismissUpdate' });
+    document.getElementById('updateBanner').style.display = 'none';
   });
 }
 
