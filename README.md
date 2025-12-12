@@ -36,8 +36,8 @@ After enabling the extension, GitHub usernames will be displayed with nicknames.
 
 ![Commit History Preview](docs/img/demos/nick-in-commit.png)
 
-| Original | Replaced |
-|----------|----------|
+| Original       | Replaced                  |
+| -------------- | ------------------------- |
 | `zhangsan-dev` | `zhangsan-dev(Zhang San)` |
 
 > 💡 Hover to see full info (domain account, email, etc.)
@@ -85,12 +85,12 @@ Detailed installation guide with screenshots: [**Installation Guide**](docs/en/I
 }
 ```
 
-| Field | Description | Required |
-|-------|-------------|:--------:|
-| `account` | GitHub username | ✅ |
-| `nickname` | Nickname/Alias | ✅ |
-| `domain` | Domain account | ❌ |
-| `email` | Email address | ❌ |
+| Field      | Description     | Required |
+| ---------- | --------------- | :------: |
+| `account`  | GitHub username |    ✅     |
+| `nickname` | Nickname/Alias  |    ✅     |
+| `domain`   | Domain account  |    ❌     |
+| `email`    | Email address   |    ❌     |
 
 ## 🔧 Development
 
@@ -169,8 +169,8 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
 
 ![提交历史预览](docs/img/demos/nick-in-commit.png)
 
-| 原始显示 | 替换后显示 |
-|---------|-----------|
+| 原始显示       | 替换后显示           |
+| -------------- | -------------------- |
 | `zhangsan-dev` | `zhangsan-dev(张三)` |
 
 > 💡 鼠标悬停会显示完整信息（域账号、邮箱等）
@@ -220,12 +220,12 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
 
 #### 字段说明
 
-| 字段 | 说明 | 必填 |
-|------|------|:----:|
-| `account` | GitHub 用户名 | ✅ |
-| `nickname` | 花名/昵称 | ✅ |
-| `domain` | 域账号/工号 | ❌ |
-| `email` | 邮箱地址 | ❌ |
+| 字段       | 说明          | 必填  |
+| ---------- | ------------- | :---: |
+| `account`  | GitHub 用户名 |   ✅   |
+| `nickname` | 花名/昵称     |   ✅   |
+| `domain`   | 域账号/工号   |   ❌   |
+| `email`    | 邮箱地址      |   ❌   |
 
 > ⚠️ `account` 和 `nickname` 至少需要填写一个
 
@@ -234,6 +234,11 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
 1. 进入控制面板 → 「本地规则」标签
 2. 填写 GitHub 用户名和花名
 3. 点击添加
+
+也可以使用「导入 / 导出」按钮批量管理本地规则：
+
+- 导出文件格式为：`{ "localRules": [ { "domain", "nick", "github_name", "github_acc" } ] }`
+- 导入时支持上述格式，或直接传入规则数组
 
 ## 🔧 开发指南
 

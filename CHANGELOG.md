@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.2] - 2025-12-12
+
+### 🎉 New Features / 新功能
+
+**English:**
+- **Local Rules Import/Export** - Import local rules from a JSON file and export current local rules
+- **Release Packaging Script** - Add a Node-based packaging script (runnable via npm) to generate versioned ZIP for Chrome Web Store
+
+**中文：**
+- **本地规则导入/导出** - 支持从本地 JSON 文件导入本地规则，并支持导出当前本地规则
+- **发布打包脚本** - 增加基于 Node 的自动打包脚本（可通过 npm 调用），生成带版本号的 Chrome Web Store ZIP 包
+
 ## [1.0.1] - 2025-12-04
 
 ### 🎉 New Features / 新功能

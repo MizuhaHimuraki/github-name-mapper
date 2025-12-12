@@ -1,42 +1,37 @@
 {
-  "manifest_version": 3,
-  "name": "GitHub Name Mapper",
-  "version": "1.0.1",
-  "description": "将 GitHub 用户名映射为 花名(nick) 格式显示",
-  "permissions": [
-    "storage",
-    "alarms",
-    "activeTab"
-  ],
-  "host_permissions": [
-    "https://github.com/*",
-    "https://*.github.com/*",
-    "<all_urls>"
-  ],
-  "background": {
-    "service_worker": "background.js"
-  },
-  "content_scripts": [
-    {
-      "matches": ["https://github.com/*", "https://*.github.com/*"],
-      "js": ["content.js"],
-      "css": ["content.css"],
-      "run_at": "document_idle"
+    "manifest_version": 3,
+    "name": "GitHub Name Mapper",
+    "version": "1.0.2",
+    "description": "将 GitHub 用户名映射为 花名(nick) 格式显示",
+    "permissions": ["storage", "alarms", "activeTab"],
+    "host_permissions": [
+        "https://github.com/*",
+        "https://*.github.com/*",
+        "<all_urls>"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": ["https://github.com/*", "https://*.github.com/*"],
+            "js": ["content.js"],
+            "css": ["content.css"],
+            "run_at": "document_idle"
+        }
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "icons/icon16.png",
+            "48": "icons/icon48.png",
+            "128": "icons/icon128.png"
+        }
+    },
+    "options_page": "options.html",
+    "icons": {
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
     }
-  ],
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
-    }
-  },
-  "options_page": "options.html",
-  "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
-  }
 }
-

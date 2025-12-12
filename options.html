@@ -254,7 +254,26 @@
         <div class="card">
           <div class="card-header">
             <h3>规则列表</h3>
-            <span class="badge" id="localRuleBadge">0</span>
+            <div class="card-header-actions">
+              <input id="localRulesImportFile" type="file" accept="application/json" hidden>
+              <button type="button" class="btn btn-secondary" id="importLocalRulesBtn" title="从本地 JSON 文件导入本地规则">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                导入
+              </button>
+              <button type="button" class="btn btn-secondary" id="exportLocalRulesBtn" title="导出当前本地规则为 JSON 文件">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                导出
+              </button>
+              <span class="badge" id="localRuleBadge">0</span>
+            </div>
           </div>
           <div class="card-body">
             <div class="rules-list" id="localRulesList">

@@ -29,15 +29,15 @@ chrome.runtime.onInstalled.addListener(async () => {
   if (!config.jsonUrl) {
     await saveConfig(DEFAULT_CONFIG);
   }
-  
+
   // 设置每日更新定时器
   if (config.autoUpdate) {
     setupDailyAlarm();
   }
-  
+
   // 设置版本检查定时器（每12小时检查一次）
   setupVersionCheckAlarm();
-  
+
   // 安装/更新后立即检查一次版本
   checkForUpdates();
 });
@@ -67,7 +67,7 @@ async function handleMessage(request, sender, sendResponse) {
         const config = await getConfig();
         sendResponse({ success: true, data: config });
         break;
-        
+
       case 'saveConfig':
         await saveConfig(request.config);
         // 更新定时器设置
@@ -78,46 +78,54 @@ async function handleMessage(request, sender, sendResponse) {
         }
         sendResponse({ success: true });
         break;
-        
+
       case 'fetchData':
         const result = await fetchAndUpdateData(request.url);
         sendResponse(result);
         break;
-        
+
       case 'getDevelopers':
         const devConfig = await getConfig();
         // 合并远程数据和本地规则
         const allDevelopers = [...devConfig.developers, ...devConfig.localRules];
         sendResponse({ success: true, data: allDevelopers });
         break;
-        
+
       case 'addLocalRule':
         await addLocalRule(request.rule);
         sendResponse({ success: true });
         break;
-        
+
       case 'removeLocalRule':
         await removeLocalRule(request.index);
         sendResponse({ success: true });
         break;
-        
+
       case 'updateLocalRule':
         await updateLocalRule(request.index, request.rule);
         sendResponse({ success: true });
         break;
-        
+
+      case 'importLocalRules':
+        {
+          const mode = request.mode || 'merge';
+          const result = await importLocalRules(request.rules, mode);
+          sendResponse({ success: true, ...result });
+        }
+        break;
+
       case 'toggle':
         const currentConfig = await getConfig();
         currentConfig.enabled = request.enabled;
         await saveConfig(currentConfig);
         sendResponse({ success: true });
         break;
-      
+
       case 'checkUpdate':
         const updateInfo = await checkForUpdates();
         sendResponse(updateInfo);
         break;
-      
+
       case 'getUpdateInfo':
         const updateConfig = await getConfig();
         const currentVersion = chrome.runtime.getManifest().version;
@@ -130,14 +138,14 @@ async function handleMessage(request, sender, sendResponse) {
           downloadUrl: `https://github.com/${GITHUB_REPO}/releases/latest`
         });
         break;
-      
+
       case 'dismissUpdate':
         const dismissConfig = await getConfig();
         dismissConfig.dismissedVersion = dismissConfig.latestVersion;
         await saveConfig(dismissConfig);
         sendResponse({ success: true });
         break;
-        
+
       default:
         sendResponse({ success: false, error: 'Unknown action' });
     }
@@ -190,25 +198,25 @@ async function checkForUpdates() {
         }
       }
     );
-    
+
     if (!response.ok) {
       console.log('Version check failed:', response.status);
       return { success: false, error: `HTTP ${response.status}` };
     }
-    
+
     const data = await response.json();
     const latestVersion = data.tag_name.replace(/^v/, '');
     const currentVersion = chrome.runtime.getManifest().version;
-    
+
     const config = await getConfig();
     config.latestVersion = latestVersion;
     config.lastVersionCheck = new Date().toISOString();
     await saveConfig(config);
-    
+
     const hasUpdate = compareVersions(latestVersion, currentVersion) > 0;
-    
+
     console.log(`Version check: current=${currentVersion}, latest=${latestVersion}, hasUpdate=${hasUpdate}`);
-    
+
     return {
       success: true,
       currentVersion,
@@ -227,15 +235,15 @@ async function checkForUpdates() {
 function compareVersions(a, b) {
   const partsA = a.split('.').map(Number);
   const partsB = b.split('.').map(Number);
-  
+
   for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
     const numA = partsA[i] || 0;
     const numB = partsB[i] || 0;
-    
+
     if (numA > numB) return 1;
     if (numA < numB) return -1;
   }
-  
+
   return 0;
 }
 
@@ -244,15 +252,15 @@ async function fetchAndUpdateData(url) {
   if (!url) {
     return { success: false, error: '请先配置 JSON URL' };
   }
-  
+
   try {
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     const data = await response.json();
-    
+
     // 支持新格式: { data: { list: [...] } } 和旧格式: { developers: [...] }
     let rawDevelopers;
     if (data.data && Array.isArray(data.data.list)) {
@@ -260,7 +268,7 @@ async function fetchAndUpdateData(url) {
     } else {
       throw new Error('JSON 格式错误: 缺少 data.list 数组');
     }
-    
+
     // 转换并验证数据格式
     const validDevelopers = rawDevelopers
       .map(dev => ({
@@ -271,19 +279,19 @@ async function fetchAndUpdateData(url) {
         github_acc: dev.email || dev.github_acc
       }))
       .filter(dev => dev.github_name && (dev.nick || dev.domain));
-    
+
     const config = await getConfig();
     config.developers = validDevelopers;
     config.lastUpdate = new Date().toISOString();
     await saveConfig(config);
-    
+
     // 通知所有 GitHub 标签页更新
     notifyTabs();
-    
-    return { 
-      success: true, 
+
+    return {
+      success: true,
       count: validDevelopers.length,
-      lastUpdate: config.lastUpdate 
+      lastUpdate: config.lastUpdate
     };
   } catch (error) {
     console.error('Fetch error:', error);
@@ -321,6 +329,69 @@ async function updateLocalRule(index, rule) {
   };
   await saveConfig(config);
   notifyTabs();
+}
+
+function normalizeImportedLocalRule(rule) {
+  if (!rule || typeof rule !== 'object') return null;
+
+  // 兼容多种字段名
+  const githubName = (rule.github_name || rule.account || rule.githubName || '').toString().trim();
+  const nick = (rule.nick || rule.nickname || '').toString().trim();
+  const domain = (rule.domain || '').toString().trim();
+  const githubAcc = (rule.github_acc || rule.email || rule.githubAcc || '').toString().trim();
+
+  if (!githubName || !nick) return null;
+
+  return {
+    domain,
+    nick,
+    github_name: githubName,
+    github_acc: githubAcc,
+    isLocal: true,
+    createdAt: (rule.createdAt || new Date().toISOString())
+  };
+}
+
+function localRuleSignature(rule) {
+  const domain = (rule.domain || '').toString().trim();
+  const nick = (rule.nick || '').toString().trim();
+  const githubName = (rule.github_name || '').toString().trim();
+  const githubAcc = (rule.github_acc || '').toString().trim();
+  return `${domain}\n${nick}\n${githubName}\n${githubAcc}`;
+}
+
+async function importLocalRules(rules, mode = 'merge') {
+  const list = Array.isArray(rules) ? rules : [];
+  const normalized = list
+    .map(normalizeImportedLocalRule)
+    .filter(Boolean);
+
+  const config = await getConfig();
+
+  if (mode === 'replace') {
+    config.localRules = normalized;
+    await saveConfig(config);
+    notifyTabs();
+    return { importedCount: normalized.length, totalLocalRules: config.localRules.length };
+  }
+
+  const existing = Array.isArray(config.localRules) ? config.localRules : [];
+  const seen = new Set(existing.map(localRuleSignature));
+  let importedCount = 0;
+
+  for (const rule of normalized) {
+    const sig = localRuleSignature(rule);
+    if (seen.has(sig)) continue;
+    seen.add(sig);
+    existing.push(rule);
+    importedCount += 1;
+  }
+
+  config.localRules = existing;
+  await saveConfig(config);
+  notifyTabs();
+
+  return { importedCount, totalLocalRules: config.localRules.length };
 }
 
 // 通知所有 GitHub 标签页更新
