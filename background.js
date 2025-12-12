@@ -26,12 +26,22 @@ const DEFAULT_CONFIG = {
 // 初始化
 chrome.runtime.onInstalled.addListener(async () => {
   const config = await getConfig();
-  if (!config.jsonUrl) {
-    await saveConfig(DEFAULT_CONFIG);
+
+  // 合并配置，保留现有数据（如 localRules），只添加缺失的默认值
+  const mergedConfig = { ...DEFAULT_CONFIG, ...config };
+
+  // 确保数组字段不被覆盖为空数组
+  if (config.localRules && config.localRules.length > 0) {
+    mergedConfig.localRules = config.localRules;
+  }
+  if (config.developers && config.developers.length > 0) {
+    mergedConfig.developers = config.developers;
   }
 
+  await saveConfig(mergedConfig);
+
   // 设置每日更新定时器
-  if (config.autoUpdate) {
+  if (mergedConfig.autoUpdate) {
     setupDailyAlarm();
   }
 
