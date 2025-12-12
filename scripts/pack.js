@@ -65,11 +65,11 @@ function main() {
     const zipName = `${baseName}-v${version}.zip`;
     const zipPath = path.join(releaseDir, zipName);
 
-    ensureDir(releaseDir);
-
-    if (clean && fs.existsSync(zipPath)) {
-        fs.rmSync(zipPath);
+    // 清空 release 目录
+    if (fs.existsSync(releaseDir)) {
+        fs.rmSync(releaseDir, { recursive: true, force: true });
     }
+    ensureDir(releaseDir);
 
     const include = [
         'manifest.json',
@@ -90,10 +90,6 @@ function main() {
 
     for (const item of include) {
         existsOrFail(path.join(repoRoot, item));
-    }
-
-    if (fs.existsSync(zipPath)) {
-        fs.rmSync(zipPath);
     }
 
     runZip(zipPath, include);
