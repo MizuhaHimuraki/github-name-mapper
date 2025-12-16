@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.3] - 2025-12-17
+
+### 🐛 Bug Fixes / 修复
+
+**English:**
+- Fixed black box overlay on `.user-mention` elements
+
+**中文：**
+- 修复 `.user-mention` 元素上出现黑色遮罩的问题
+
+### 📖 Documentation / 文档
+
+**English:**
+- Updated project logo
+
+**中文：**
+- 更新项目 Logo
+
+---
+
 ## [1.0.2] - 2025-12-12
 
 ### 🎉 New Features / 新功能

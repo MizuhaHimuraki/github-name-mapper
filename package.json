@@ -1,7 +1,7 @@
 {
     "name": "github-name-mapper",
     "private": true,
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "GitHub Name Mapper Chrome Extension",
     "scripts": {
         "pack": "node scripts/pack.js",
