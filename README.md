@@ -1,7 +1,7 @@
 # GitHub Name Mapper
 
 <p align="center">
-  <img src="icons/icon128.png" alt="GitHub Name Mapper" width="128" height="128">
+  <img src="icons/logo.png" alt="GitHub Name Mapper" width="128" height="128">
 </p>
 
 <p align="center">
