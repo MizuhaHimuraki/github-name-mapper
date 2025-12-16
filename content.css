@@ -57,6 +57,20 @@
   cursor: help;
 }
 
+/* user-mention 元素特殊处理 - 隐藏 gnm 的 tooltip 伪元素以避免黑色方形框 */
+.user-mention.gnm-replaced::after {
+  content: '' !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.user-mention.gnm-replaced::before {
+  content: '' !important;
+  border: none !important;
+}
+
 /* ==================== 头像高亮样式 ==================== */
 
 /* 头像高亮 - 使用多重样式确保可见性 */
