@@ -105,7 +105,7 @@ The extension accepts any of the following response shapes:
 
 The extension can load mapping data from **any reachable JSON URL**. Common hosting options:
 
-- **GitHub Pages (`github.io`, recommended for teams)**: publish a `data.json` as a static file and use a URL like `https://<your-user>.github.io/<repo>/data.json`. For the full step-by-step guide, see `gh-pages/README.md` (this repo includes an example at `gh-pages/data.json`). Live example: `https://mizuhahimuraki.github.io/github-name-mapper/data.json`.
+- **GitHub Pages (`github.io`, recommended for teams)**: publish a `data.json` as a static file and use a URL like `https://<your-user>.github.io/<repo>/data.json`. For the full step-by-step guide, see `docs/gh-pages/README.md` (this repo includes an example at `docs/gh-pages/data.json`). Live example: <https://mizuhahimuraki.github.io/github-name-mapper/gh-pages/data.json>.
 - **Any static hosting**: put `data.json` on Nginx/Apache, OSS/S3-compatible storage, Netlify/Vercel, etc.
 - **GitHub raw / Gist raw**: host a single JSON file and use its “raw” URL (note: some providers may cache).
 - **This repo’s minimal backend (LAN/local)**: run `backend/server.mjs` (or Docker) to serve `/data.json` and provide a stable URL in your local network. See `backend/README.md`.
@@ -260,7 +260,7 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
 
 插件支持从**任意可访问的 JSON URL**加载数据源，常见的托管方式如下：
 
-- **GitHub Pages（`github.io`，团队推荐）**：把 `data.json` 作为静态文件发布，并使用类似 `https://<你的用户名>.github.io/<仓库名>/data.json` 的地址。完整的手把手教程见 `gh-pages/README.md`（本仓库已提供示例：`gh-pages/data.json`）。已部署示例：`https://mizuhahimuraki.github.io/github-name-mapper/data.json`。
+- **GitHub Pages（`github.io`，团队推荐）**：把 `data.json` 作为静态文件发布，并使用类似 `https://<你的用户名>.github.io/<仓库名>/data.json` 的地址。完整的手把手教程见 `docs/gh-pages/README.md`（本仓库已提供示例：`docs/gh-pages/data.json`）。已部署示例：<https://mizuhahimuraki.github.io/github-name-mapper/gh-pages/data.json>。
 - **任意静态托管**：把 `data.json` 放在 Nginx/Apache、OSS/S3 兼容对象存储、Netlify/Vercel 等静态站点上。
 - **GitHub raw / Gist raw**：只维护一个 JSON 文件，直接使用其 raw 地址（注意：部分平台可能有缓存）。
 - **本仓库自带极简后端（内网/本地）**：运行 `backend/server.mjs`（或 Docker）提供 `/data.json`，在内网给插件一个稳定地址。详见 `backend/README.md`。

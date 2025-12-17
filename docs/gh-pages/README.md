@@ -6,12 +6,12 @@ If you publish `data.json` on GitHub Pages, you can use it as the extension’s 
 
 Live example (already deployed):
 
-- `https://mizuhahimuraki.github.io/github-name-mapper/data.json`
+- <https://mizuhahimuraki.github.io/github-name-mapper/gh-pages/data.json>
 
 ## Quick Start (recommended)
 
 1. Create a new repository (e.g. `name-mapper-data`).
-2. Copy `gh-pages/data.json` from this repo into your new repo (put it in the repo root, or any folder that will be published by GitHub Pages).
+2. Copy `docs/gh-pages/data.json` from this repo into your new repo (put it in the repo root, or any folder that will be published by GitHub Pages).
 3. In your repo settings, enable GitHub Pages:
    - Settings → Pages
    - Build and deployment → Source: `main` + `/` (or `/docs` if you put the file there)
@@ -35,12 +35,12 @@ Live example (already deployed):
 
 已部署示例（可直接使用）：
 
-- `https://mizuhahimuraki.github.io/github-name-mapper/data.json`
+- <https://mizuhahimuraki.github.io/github-name-mapper/gh-pages/data.json>
 
 ## 快速上手（推荐）
 
 1. 新建一个仓库（例如 `name-mapper-data`）。
-2. 将本仓库的 `gh-pages/data.json` 拷贝到新仓库中（放在仓库根目录，或任何会被 GitHub Pages 发布的目录里）。
+2. 将本仓库的 `docs/gh-pages/data.json` 拷贝到新仓库中（放在仓库根目录，或任何会被 GitHub Pages 发布的目录里）。
 3. 在仓库设置中启用 GitHub Pages：
    - Settings → Pages
    - Build and deployment → Source 选择 `main` 分支 + `/`（如果文件放在 `/docs`，则选择 `/docs`）
