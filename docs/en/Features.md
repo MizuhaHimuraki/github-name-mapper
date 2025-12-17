@@ -9,10 +9,12 @@ Click the extension icon to see a quick status summary and access the full contr
 
 ![Popup Menu](../img/ui/popup.png)
 
-### 2. Basic Settings
-In the Control Panel, you can configure the remote JSON data source.
-- **JSON URL**: The URL to fetch the mapping data from.
-- **Auto Update**: Enable daily automatic updates from the remote source.
+### 2. Data Source Settings
+In the Control Panel, you can configure multiple remote JSON data sources.
+- **Multiple URLs**: Add one or more JSON URLs. Data from all enabled sources will be automatically merged (deduplicated by GitHub username).
+- **Enable/Disable**: Toggle each data source on or off individually.
+- **Load All**: Fetch data from all enabled sources at once.
+- **Auto Update**: Enable daily automatic updates from all enabled sources.
 
 ![Basic Settings](../img/ui/settings-basic-URL-and-auto-load.png)
 

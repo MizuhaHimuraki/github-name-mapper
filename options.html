@@ -144,21 +144,43 @@
         <div class="card">
           <div class="card-header">
             <h3>数据源配置</h3>
+            <div class="card-header-actions">
+              <button class="btn btn-primary btn-sm" id="fetchAllBtn" title="加载所有启用的数据源">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 4 23 10 17 10"/>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+                全部加载
+              </button>
+            </div>
           </div>
           <div class="card-body">
             <div class="form-group">
-              <label for="jsonUrl">JSON URL</label>
-              <p class="form-hint">配置包含 developers 数组的 JSON 文件地址</p>
-              <div class="input-group">
-                <input type="url" id="jsonUrl" placeholder="https://example.com/developers.json">
-                <button class="btn btn-primary" id="fetchBtn">加载</button>
+              <label>添加数据源</label>
+              <p class="form-hint">支持配置多个 JSON URL，数据会自动合并（按 GitHub 用户名去重）</p>
+              <div class="add-source-form">
+                <div class="input-row">
+                  <input type="text" id="newSourceName" placeholder="名称（可选）" class="source-name-input">
+                  <input type="url" id="newSourceUrl" placeholder="https://example.com/developers.json" class="source-url-input">
+                  <button class="btn btn-primary" id="addSourceBtn">添加</button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>数据源列表</label>
+              <div class="sources-list" id="sourcesList">
+                <div class="empty-state empty-state-sm">
+                  <p>暂无数据源</p>
+                  <span>使用上方表单添加 JSON URL</span>
+                </div>
               </div>
             </div>
             
             <div class="form-group switch-group">
               <div class="switch-info">
                 <label>每日自动更新</label>
-                <p>每天自动从 URL 获取最新数据</p>
+                <p>每天自动从所有启用的数据源获取最新数据</p>
               </div>
               <label class="toggle-switch">
                 <input type="checkbox" id="autoUpdate">

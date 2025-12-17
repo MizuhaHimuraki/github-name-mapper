@@ -22,8 +22,8 @@
 
 Full feature guide and management instructions: [**Features & Management Guide**](docs/en/Features.md)
 
-- 🔄 **Remote Data Source** - Load developer mapping data from a JSON URL
-- ⏰ **Auto Update** - Optional daily auto-update from remote URL
+- 🔄 **Multiple Data Sources** - Configure multiple JSON URLs, data auto-merges with deduplication by GitHub username
+- ⏰ **Auto Update** - Optional daily auto-update from all enabled data sources
 - 📝 **Local Rules** - Manually add local mapping rules with higher priority
 - 🎯 **Smart Replacement** - Only active on GitHub, intelligently identifies usernames
 - 🎛️ **Control Panel** - Standalone configuration interface with data preview and search
@@ -60,8 +60,8 @@ Detailed installation guide with screenshots: [**Installation Guide**](docs/en/I
 
 3. **Configure**
    - Click extension icon -> **Control Panel**
-   - Enter your JSON URL in "Basic Config"
-   - Click **Load**
+   - Add one or more JSON URLs in "Data Source Config"
+   - Click **Load All** or load each source individually
 
 ## 📖 Configuration
 
@@ -173,8 +173,8 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
 
 完整功能介绍与管理指南：[**功能特性与管理指南**](docs/zh/Features.md)
 
-- 🔄 **远程数据源** - 配置 JSON URL 自动加载开发者映射数据
-- ⏰ **每日自动更新** - 可选择启用每天自动从远程 URL 更新数据
+- 🔄 **多数据源支持** - 可配置多个 JSON URL，数据自动合并（按 GitHub 用户名去重）
+- ⏰ **每日自动更新** - 可选择启用每天自动从所有启用的数据源更新数据
 - 📝 **本地规则** - 支持手动添加本地映射规则，优先级高于远程数据
 - 🎯 **精准替换** - 仅在 GitHub 网站启用，智能识别并替换用户名
 - 🎛️ **控制面板** - 独立的配置管理界面，支持数据预览和搜索
@@ -211,8 +211,8 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
 
 3. **配置数据源**
    - 点击扩展图标 -> 「**控制面板**」
-   - 在「基础配置」中填入 JSON URL
-   - 点击「**加载**」
+   - 在「数据源配置」中添加一个或多个 JSON URL
+   - 点击「**全部加载**」或单独加载每个数据源
 
 ## 📖 配置说明
 

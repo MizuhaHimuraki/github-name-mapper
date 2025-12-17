@@ -6,7 +6,8 @@ const GITHUB_REPO = 'MizuhaHimuraki/github-name-mapper';
 const DEFAULT_CONFIG = {
   enabled: true,
   autoUpdate: true,
-  jsonUrl: '',
+  jsonUrl: '',           // 保留兼容旧版单 URL 配置
+  jsonUrls: [],          // 多数据源配置: [{ url, name, enabled, lastUpdate, count }]
   lastUpdate: null,
   developers: [],
   localRules: [],
@@ -56,8 +57,14 @@ chrome.runtime.onInstalled.addListener(async () => {
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === ALARM_NAME) {
     const config = await getConfig();
-    if (config.autoUpdate && config.jsonUrl) {
-      await fetchAndUpdateData(config.jsonUrl);
+    if (config.autoUpdate) {
+      // 优先使用多数据源
+      if (config.jsonUrls && config.jsonUrls.length > 0) {
+        await fetchAllDataSources();
+      } else if (config.jsonUrl) {
+        // 兼容旧版单 URL
+        await fetchAndUpdateData(config.jsonUrl);
+      }
     }
   } else if (alarm.name === VERSION_CHECK_ALARM) {
     await checkForUpdates();
@@ -92,6 +99,31 @@ async function handleMessage(request, sender, sendResponse) {
       case 'fetchData':
         const result = await fetchAndUpdateData(request.url);
         sendResponse(result);
+        break;
+
+      case 'fetchAllSources':
+        const fetchAllResult = await fetchAllDataSources();
+        sendResponse(fetchAllResult);
+        break;
+
+      case 'addDataSource':
+        const addResult = await addDataSource(request.source);
+        sendResponse(addResult);
+        break;
+
+      case 'removeDataSource':
+        const removeResult = await removeDataSource(request.index);
+        sendResponse(removeResult);
+        break;
+
+      case 'updateDataSource':
+        const updateResult = await updateDataSource(request.index, request.source);
+        sendResponse(updateResult);
+        break;
+
+      case 'fetchSingleSource':
+        const singleResult = await fetchSingleDataSource(request.index);
+        sendResponse(singleResult);
         break;
 
       case 'getDevelopers':
@@ -317,6 +349,225 @@ async function fetchAndUpdateData(url) {
     console.error('Fetch error:', error);
     return { success: false, error: error.message };
   }
+}
+
+// ========== 多数据源管理 ==========
+
+// 添加数据源
+async function addDataSource(source) {
+  const config = await getConfig();
+  if (!config.jsonUrls) config.jsonUrls = [];
+
+  const newSource = {
+    url: source.url,
+    name: source.name || extractNameFromUrl(source.url),
+    enabled: source.enabled !== false,
+    lastUpdate: null,
+    count: 0,
+    id: Date.now().toString()
+  };
+
+  config.jsonUrls.push(newSource);
+  await saveConfig(config);
+
+  return { success: true, source: newSource };
+}
+
+// 从 URL 提取名称
+function extractNameFromUrl(url) {
+  try {
+    const urlObj = new URL(url);
+    const pathname = urlObj.pathname;
+    const filename = pathname.split('/').pop() || urlObj.hostname;
+    return filename.replace(/\.json$/i, '') || urlObj.hostname;
+  } catch {
+    return '数据源';
+  }
+}
+
+// 删除数据源
+async function removeDataSource(index) {
+  const config = await getConfig();
+  if (!config.jsonUrls || index < 0 || index >= config.jsonUrls.length) {
+    return { success: false, error: '数据源不存在' };
+  }
+
+  config.jsonUrls.splice(index, 1);
+
+  // 重新合并所有启用的数据源
+  await mergeAllDataSources(config);
+  await saveConfig(config);
+  notifyTabs();
+
+  return { success: true };
+}
+
+// 更新数据源
+async function updateDataSource(index, source) {
+  const config = await getConfig();
+  if (!config.jsonUrls || index < 0 || index >= config.jsonUrls.length) {
+    return { success: false, error: '数据源不存在' };
+  }
+
+  config.jsonUrls[index] = {
+    ...config.jsonUrls[index],
+    ...source,
+    updatedAt: new Date().toISOString()
+  };
+
+  await saveConfig(config);
+  return { success: true, source: config.jsonUrls[index] };
+}
+
+// 获取单个数据源的数据
+async function fetchSingleDataSource(index) {
+  const config = await getConfig();
+  if (!config.jsonUrls || index < 0 || index >= config.jsonUrls.length) {
+    return { success: false, error: '数据源不存在' };
+  }
+
+  const source = config.jsonUrls[index];
+  if (!source.url) {
+    return { success: false, error: '数据源 URL 为空' };
+  }
+
+  try {
+    const data = await fetchDataFromUrl(source.url);
+    source.lastUpdate = new Date().toISOString();
+    source.count = data.length;
+    source.data = data;
+    source.error = null;
+
+    await saveConfig(config);
+
+    // 重新合并所有数据
+    await mergeAllDataSources(config);
+    await saveConfig(config);
+    notifyTabs();
+
+    return { success: true, count: data.length, source };
+  } catch (error) {
+    source.error = error.message;
+    await saveConfig(config);
+    return { success: false, error: error.message };
+  }
+}
+
+// 获取所有启用的数据源
+async function fetchAllDataSources() {
+  const config = await getConfig();
+
+  // 兼容旧版：如果有 jsonUrl 但没有 jsonUrls，迁移到新格式
+  if (config.jsonUrl && (!config.jsonUrls || config.jsonUrls.length === 0)) {
+    config.jsonUrls = [{
+      url: config.jsonUrl,
+      name: extractNameFromUrl(config.jsonUrl),
+      enabled: true,
+      lastUpdate: config.lastUpdate,
+      count: config.developers?.length || 0,
+      id: Date.now().toString()
+    }];
+  }
+
+  if (!config.jsonUrls || config.jsonUrls.length === 0) {
+    return { success: false, error: '没有配置数据源' };
+  }
+
+  const results = [];
+  let totalCount = 0;
+  let hasError = false;
+
+  for (let i = 0; i < config.jsonUrls.length; i++) {
+    const source = config.jsonUrls[i];
+    if (!source.enabled || !source.url) continue;
+
+    try {
+      const data = await fetchDataFromUrl(source.url);
+      source.lastUpdate = new Date().toISOString();
+      source.count = data.length;
+      source.data = data;
+      source.error = null;
+      totalCount += data.length;
+      results.push({ index: i, success: true, count: data.length });
+    } catch (error) {
+      source.error = error.message;
+      hasError = true;
+      results.push({ index: i, success: false, error: error.message });
+    }
+  }
+
+  // 合并所有数据
+  await mergeAllDataSources(config);
+  config.lastUpdate = new Date().toISOString();
+  await saveConfig(config);
+  notifyTabs();
+
+  return {
+    success: !hasError || totalCount > 0,
+    totalCount,
+    results,
+    hasError
+  };
+}
+
+// 从 URL 获取数据（不保存）
+async function fetchDataFromUrl(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+
+  // 支持多种格式
+  let rawDevelopers;
+  if (Array.isArray(data)) {
+    rawDevelopers = data;
+  } else if (data && data.data && Array.isArray(data.data.list)) {
+    rawDevelopers = data.data.list;
+  } else if (data && Array.isArray(data.developers)) {
+    rawDevelopers = data.developers;
+  } else if (data && Array.isArray(data.list)) {
+    rawDevelopers = data.list;
+  } else {
+    throw new Error('JSON 格式错误: 需要 data.list / developers / list 数组，或直接返回数组');
+  }
+
+  // 转换并验证数据格式
+  return rawDevelopers
+    .map(dev => ({
+      github_name: dev.account || dev.github_name,
+      nick: dev.nickname || dev.nick,
+      domain: dev.domain,
+      github_acc: dev.email || dev.github_acc
+    }))
+    .filter(dev => dev.github_name && (dev.nick || dev.domain));
+}
+
+// 合并所有数据源的数据到 developers
+async function mergeAllDataSources(config) {
+  const allDevelopers = [];
+  const seen = new Set();
+
+  if (config.jsonUrls) {
+    for (const source of config.jsonUrls) {
+      if (!source.enabled || !source.data) continue;
+
+      const sourceName = source.name || extractNameFromUrl(source.url);
+      for (const dev of source.data) {
+        const key = dev.github_name?.toLowerCase();
+        if (key && !seen.has(key)) {
+          seen.add(key);
+          allDevelopers.push({
+            ...dev,
+            _sourceName: sourceName  // 添加来源名称
+          });
+        }
+      }
+    }
+  }
+
+  config.developers = allDevelopers;
 }
 
 // 添加本地规则

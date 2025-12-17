@@ -10,6 +10,7 @@ async function init() {
   setupEventListeners();
   loadLocalRules();
   loadDataTable();
+  // loadSourcesList 已在 updateUI 中调用
 }
 
 // 加载配置
@@ -37,8 +38,8 @@ function updateUI() {
   // 子开关禁用状态
   updateSubSwitches(currentConfig.enabled);
 
-  // JSON URL
-  document.getElementById('jsonUrl').value = currentConfig.jsonUrl || '';
+  // 数据源列表
+  loadSourcesList();
 
   // 自动更新
   document.getElementById('autoUpdate').checked = currentConfig.autoUpdate;
@@ -167,31 +168,55 @@ function setupEventListeners() {
     showToast(e.target.checked ? '已开启调试模式，刷新 GitHub 页面后按 F12 查看' : '已关闭调试模式', 'success');
   });
 
-  // 加载数据按钮
-  document.getElementById('fetchBtn').addEventListener('click', async () => {
-    const url = document.getElementById('jsonUrl').value.trim();
+  // 添加数据源按钮
+  document.getElementById('addSourceBtn').addEventListener('click', async () => {
+    const url = document.getElementById('newSourceUrl').value.trim();
+    const name = document.getElementById('newSourceName').value.trim();
+
     if (!url) {
-      showToast('请输入用户数据源地址', 'error');
+      showToast('请输入数据源 URL', 'error');
       return;
     }
 
-    // 保存 URL
-    currentConfig.jsonUrl = url;
-    await sendMessage({ action: 'saveConfig', config: currentConfig });
+    // 验证 URL 格式
+    try {
+      new URL(url);
+    } catch {
+      showToast('请输入有效的 URL', 'error');
+      return;
+    }
 
-    // 加载数据
-    const btn = document.getElementById('fetchBtn');
+    const result = await sendMessage({
+      action: 'addDataSource',
+      source: { url, name }
+    });
+
+    if (result.success) {
+      showToast('数据源添加成功', 'success');
+      document.getElementById('newSourceUrl').value = '';
+      document.getElementById('newSourceName').value = '';
+      await loadConfig();
+      loadSourcesList();
+    } else {
+      showToast(result.error || '添加失败', 'error');
+    }
+  });
+
+  // 全部加载按钮
+  document.getElementById('fetchAllBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('fetchAllBtn');
     btn.classList.add('loading');
     btn.disabled = true;
 
-    const result = await sendMessage({ action: 'fetchData', url });
+    const result = await sendMessage({ action: 'fetchAllSources' });
 
     btn.classList.remove('loading');
     btn.disabled = false;
 
     if (result.success) {
-      showToast(`成功加载 ${result.count} 条规则`, 'success');
+      showToast(`成功加载 ${result.totalCount} 条规则`, 'success');
       await loadConfig();
+      loadSourcesList();
       loadDataTable();
     } else {
       showToast(result.error || '加载失败', 'error');
@@ -331,6 +356,146 @@ function downloadJson(data, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
+// 加载数据源列表
+function loadSourcesList() {
+  const container = document.getElementById('sourcesList');
+  const sources = currentConfig.jsonUrls || [];
+
+  // 兼容旧版：如果有 jsonUrl 但没有 jsonUrls，显示迁移提示
+  if (currentConfig.jsonUrl && sources.length === 0) {
+    container.classList.add('has-items');
+    container.innerHTML = `
+      <div class="source-item migrate-hint">
+        <div class="source-info">
+          <div class="source-name">旧版数据源</div>
+          <div class="source-url">${escapeHtml(currentConfig.jsonUrl)}</div>
+          <div class="source-meta">
+            <span>点击「全部加载」将自动迁移到新的多数据源格式</span>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if (sources.length === 0) {
+    container.classList.remove('has-items');
+    container.innerHTML = `
+      <div class="empty-state empty-state-sm">
+        <p>暂无数据源</p>
+        <span>使用上方表单添加 JSON URL</span>
+      </div>
+    `;
+    return;
+  }
+
+  container.classList.add('has-items');
+  container.innerHTML = sources.map((source, index) => `
+    <div class="source-item ${source.enabled ? '' : 'disabled'}" data-index="${index}">
+      <label class="toggle-switch source-toggle">
+        <input type="checkbox" class="source-enable-toggle" data-index="${index}" ${source.enabled ? 'checked' : ''}>
+        <span class="slider"></span>
+      </label>
+      <div class="source-info">
+        <div class="source-name">${escapeHtml(source.name || '未命名')}</div>
+        <div class="source-url" title="${escapeHtml(source.url)}">${escapeHtml(source.url)}</div>
+        <div class="source-meta">
+          ${source.count ? `<span class="count">${source.count} 条规则</span>` : ''}
+          ${source.lastUpdate ? `<span>更新于 ${formatDate(new Date(source.lastUpdate))}</span>` : '<span>未加载</span>'}
+          ${source.error ? `<span class="error" title="${escapeHtml(source.error)}">⚠ 加载失败</span>` : ''}
+        </div>
+      </div>
+      <div class="source-actions">
+        <button class="btn-icon fetch-source-btn" data-index="${index}" title="加载此数据源">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+        </button>
+        <button class="btn-icon btn-danger delete-source-btn" data-index="${index}" title="删除此数据源">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  // 绑定启用/禁用开关事件
+  container.querySelectorAll('.source-enable-toggle').forEach(toggle => {
+    toggle.addEventListener('change', async (e) => {
+      const index = parseInt(e.target.getAttribute('data-index'));
+      const enabled = e.target.checked;
+
+      const result = await sendMessage({
+        action: 'updateDataSource',
+        index,
+        source: { enabled }
+      });
+
+      if (result.success) {
+        await loadConfig();
+        loadSourcesList();
+        loadDataTable();
+        showToast(enabled ? '数据源已启用' : '数据源已禁用', 'success');
+      } else {
+        showToast(result.error || '操作失败', 'error');
+        e.target.checked = !enabled; // 恢复状态
+      }
+    });
+  });
+
+  // 绑定单个加载按钮事件
+  container.querySelectorAll('.fetch-source-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const index = parseInt(btn.getAttribute('data-index'));
+      btn.classList.add('loading');
+
+      const result = await sendMessage({
+        action: 'fetchSingleSource',
+        index
+      });
+
+      btn.classList.remove('loading');
+
+      if (result.success) {
+        showToast(`成功加载 ${result.count} 条规则`, 'success');
+        await loadConfig();
+        loadSourcesList();
+        loadDataTable();
+      } else {
+        showToast(result.error || '加载失败', 'error');
+        await loadConfig();
+        loadSourcesList();
+      }
+    });
+  });
+
+  // 绑定删除按钮事件
+  container.querySelectorAll('.delete-source-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const index = parseInt(btn.getAttribute('data-index'));
+
+      if (!confirm('确定要删除此数据源吗？')) return;
+
+      const result = await sendMessage({
+        action: 'removeDataSource',
+        index
+      });
+
+      if (result.success) {
+        showToast('数据源已删除', 'success');
+        await loadConfig();
+        loadSourcesList();
+        loadDataTable();
+      } else {
+        showToast(result.error || '删除失败', 'error');
+      }
+    });
+  });
+}
+
 // 加载本地规则列表
 function loadLocalRules() {
   const container = document.getElementById('localRulesList');
@@ -407,19 +572,23 @@ function loadDataTable() {
   emptyState.style.display = 'none';
   document.querySelector('.table-container').style.display = 'block';
 
-  tbody.innerHTML = allData.map(dev => `
-    <tr data-searchable="${(dev.domain + dev.nick + dev.github_name + dev.github_acc).toLowerCase()}">
+  tbody.innerHTML = allData.map(dev => {
+    const sourceName = dev.isLocal ? '本地规则' : (dev._sourceName || '远程');
+    const sourceClass = dev.isLocal ? 'local' : 'remote';
+    return `
+    <tr data-searchable="${(dev.domain + dev.nick + dev.github_name + dev.github_acc + sourceName).toLowerCase()}">
       <td>${escapeHtml(dev.domain || '-')}</td>
       <td>${escapeHtml(dev.nick || '-')}</td>
       <td>${escapeHtml(dev.github_name || '-')}</td>
       <td>${escapeHtml(dev.github_acc || '-')}</td>
       <td>
-        <span class="source-badge ${dev.isLocal ? 'local' : 'remote'}">
-          ${dev.isLocal ? '本地' : '远程'}
+        <span class="source-badge ${sourceClass}" title="${escapeHtml(sourceName)}">
+          ${escapeHtml(sourceName)}
         </span>
       </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 }
 
 // 过滤数据表格
