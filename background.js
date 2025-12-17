@@ -271,12 +271,22 @@ async function fetchAndUpdateData(url) {
 
     const data = await response.json();
 
-    // 支持新格式: { data: { list: [...] } } 和旧格式: { developers: [...] }
+    // 支持多种格式（方便接 github.io / 任意后端）：
+    // 1) { data: { list: [...] } }
+    // 2) { developers: [...] }
+    // 3) { list: [...] }
+    // 4) [...] (直接数组)
     let rawDevelopers;
-    if (data.data && Array.isArray(data.data.list)) {
+    if (Array.isArray(data)) {
+      rawDevelopers = data;
+    } else if (data && data.data && Array.isArray(data.data.list)) {
       rawDevelopers = data.data.list;
+    } else if (data && Array.isArray(data.developers)) {
+      rawDevelopers = data.developers;
+    } else if (data && Array.isArray(data.list)) {
+      rawDevelopers = data.list;
     } else {
-      throw new Error('JSON 格式错误: 缺少 data.list 数组');
+      throw new Error('JSON 格式错误: 需要 data.list / developers / list 数组，或直接返回数组');
     }
 
     // 转换并验证数据格式

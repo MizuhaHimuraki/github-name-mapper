@@ -1,0 +1,23 @@
+{
+  "code": 200,
+  "success": true,
+  "data": {
+    "total": 2,
+    "list": [
+      {
+        "domain": "zhangsan",
+        "nickname": "张三",
+        "account": "zhangsan-dev",
+        "email": "zhangsan@example.com"
+      },
+      {
+        "domain": "lisi",
+        "nickname": "李四",
+        "account": "lisi-dev",
+        "email": "lisi@example.com"
+      }
+    ]
+  }
+}
+
+

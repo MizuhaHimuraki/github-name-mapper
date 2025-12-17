@@ -21,3 +21,6 @@ package-lock.json
 # Release artifacts
 release/
 
+# Backend runtime data (may change after running server)
+backend/data.json
+

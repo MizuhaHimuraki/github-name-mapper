@@ -67,6 +67,15 @@ Detailed installation guide with screenshots: [**Installation Guide**](docs/en/I
 
 ### JSON Format
 
+The extension accepts any of the following response shapes:
+
+- `{ "data": { "list": [...] } }` (recommended / default example)
+- `{ "developers": [...] }`
+- `{ "list": [...] }`
+- `[...]` (plain array)
+
+**Recommended format:**
+
 ```json
 {
   "code": 200,
@@ -91,6 +100,15 @@ Detailed installation guide with screenshots: [**Installation Guide**](docs/en/I
 | `nickname` | Nickname/Alias  |    ✅     |
 | `domain`   | Domain account  |    ❌     |
 | `email`    | Email address   |    ❌     |
+
+### Host the JSON data source (JSON URL)
+
+The extension can load mapping data from **any reachable JSON URL**. Common hosting options:
+
+- **GitHub Pages (`github.io`, recommended for teams)**: publish a `data.json` as a static file and use a URL like `https://<your-user>.github.io/<repo>/data.json`. For the full step-by-step guide, see `gh-pages/README.md` (this repo includes an example at `gh-pages/data.json`). Live example: `https://mizuhahimuraki.github.io/github-name-mapper/data.json`.
+- **Any static hosting**: put `data.json` on Nginx/Apache, OSS/S3-compatible storage, Netlify/Vercel, etc.
+- **GitHub raw / Gist raw**: host a single JSON file and use its “raw” URL (note: some providers may cache).
+- **This repo’s minimal backend (LAN/local)**: run `backend/server.mjs` (or Docker) to serve `/data.json` and provide a stable URL in your local network. See `backend/README.md`.
 
 ## 🔧 Development
 
@@ -200,6 +218,15 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
 
 ### JSON 数据格式
 
+为方便接入各种数据源，插件支持以下任一返回格式：
+
+- `{ "data": { "list": [...] } }`（推荐/默认示例）
+- `{ "developers": [...] }`
+- `{ "list": [...] }`
+- `[...]`（直接数组）
+
+**推荐格式：**
+
 ```json
 {
   "code": 200,
@@ -228,6 +255,15 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
 | `email`    | 邮箱地址      |   ❌   |
 
 > ⚠️ `account` 和 `nickname` 至少需要填写一个
+
+### 托管 JSON 数据源（JSON URL）
+
+插件支持从**任意可访问的 JSON URL**加载数据源，常见的托管方式如下：
+
+- **GitHub Pages（`github.io`，团队推荐）**：把 `data.json` 作为静态文件发布，并使用类似 `https://<你的用户名>.github.io/<仓库名>/data.json` 的地址。完整的手把手教程见 `gh-pages/README.md`（本仓库已提供示例：`gh-pages/data.json`）。已部署示例：`https://mizuhahimuraki.github.io/github-name-mapper/data.json`。
+- **任意静态托管**：把 `data.json` 放在 Nginx/Apache、OSS/S3 兼容对象存储、Netlify/Vercel 等静态站点上。
+- **GitHub raw / Gist raw**：只维护一个 JSON 文件，直接使用其 raw 地址（注意：部分平台可能有缓存）。
+- **本仓库自带极简后端（内网/本地）**：运行 `backend/server.mjs`（或 Docker）提供 `/data.json`，在内网给插件一个稳定地址。详见 `backend/README.md`。
 
 ### 本地规则
 

@@ -1,0 +1,26 @@
+[
+  {
+    "domain": "zhangsan",
+    "nickname": "张三",
+    "account": "zhangsan-dev",
+    "email": "zhangsan@example.com"
+  },
+  {
+    "domain": "lisi",
+    "nickname": "李四",
+    "account": "lisi-dev",
+    "email": "lisi@example.com"
+  },
+  {
+    "domain": "wangwu",
+    "nickname": "王五",
+    "account": "wangwu-dev",
+    "email": "wangwu@example.com"
+  },
+  {
+    "domain": "123",
+    "nickname": "123",
+    "account": "13",
+    "email": "3123"
+  }
+]
