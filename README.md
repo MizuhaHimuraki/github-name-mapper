@@ -148,6 +148,12 @@ GitHub Actions will automatically create a release with the packaged ZIP file.
 
 - [ ] DingTalk integration (requires internal service)
 
+## 🔒 Privacy Policy
+
+This extension respects your privacy and does not collect any personal data. All configuration and mapping data is stored locally in your browser.
+
+For details, see our [Privacy Policy](docs/PRIVACY.md).
+
 ## 📄 License
 
 [MIT License](LICENSE) © 2025 MizuhaHimuraki
@@ -316,6 +322,16 @@ git push origin v1.0.1
 
 - [ ] 钉钉跳转联系用户（需要内部服务中转）
 
+## 🔒 隐私政策
+
+本扩展尊重您的隐私，不收集任何个人数据。所有配置和映射数据都存储在您的浏览器本地。
+
+详情请见 [隐私政策](docs/PRIVACY.md)。
+
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
+
+## 📄 许可证
+
+[MIT License](LICENSE) © 2025 MizuhaHimuraki

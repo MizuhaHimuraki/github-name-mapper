@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "GitHub Name Mapper",
     "version": "1.0.3",
-    "description": "将 GitHub 用户名映射为 花名(nick) 格式显示",
+    "description": "Map GitHub usernames to nicknames for better team collaboration. Privacy-friendly - all data stored locally.",
     "permissions": ["storage", "alarms", "activeTab"],
     "host_permissions": [
         "https://github.com/*",
